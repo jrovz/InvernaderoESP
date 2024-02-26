@@ -7,8 +7,6 @@ Este proyecto consiste en un sistema de control de invernadero basado en ESP8266
 ## Características
 
 - **Monitoreo de Temperatura y Humedad:** Utiliza un sensor DHT11 para medir la temperatura y la humedad del invernadero.
-  
-- **Control Automatizado de Luces:** Regula las luces del invernadero de acuerdo con la hora del día para optimizar el crecimiento de las plantas.
 
 - **Interfaz de Usuario Clara:** Muestra los datos de temperatura, humedad y estado de las luces en una pantalla OLED para facilitar la visualización.
 

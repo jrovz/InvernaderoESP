@@ -23,6 +23,20 @@ Este proyecto consiste en un sistema de control de invernadero basado en ESP8266
 
 3. Conecta tu placa ESP8266 a tu computadora y carga el sketch.
 
+
+## Conexiones
+
+A continuación se detallan las conexiones necesarias para el proyecto:
+
+- **Sensor DHT11:** Conectar el pin de datos del sensor al pin D6 del ESP8266.
+
+- **Relés:** Conectar los relés de control de luces a los pines D7 y D8 del ESP8266.
+
+- **Pantalla OLED:** Conectar la pantalla OLED a los pines SDA y SCL del ESP8266 (usualmente D1 y D2, respectivamente).
+
+- **Módulo RTC DS1302:** Conectar el módulo RTC a los pines IO, SCLK y CE del ESP8266 (usualmente D3, D5 y D4, respectivamente).
+
+
 ## Contribuciones
 
 ¡Las contribuciones son bienvenidas! Si te interesa contribuir al desarrollo de este proyecto, no dudes en enviar pull requests con mejoras, correcciones de errores o nuevas características. Tu ayuda es fundamental para hacer de este proyecto una herramienta aún más poderosa y útil para la comunidad.

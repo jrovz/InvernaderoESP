@@ -1,8 +1,8 @@
 # Control de Invernadero con ESP8266
+Este proyecto utiliza un ESP8266 para monitorear y controlar las condiciones ambientales de un invernadero, incluyendo la temperatura, la humedad y la iluminación. Se utiliza una pantalla OLED para mostrar los datos y se utilizan sensores DHT11 para medir la temperatura y la humedad.
 
 ![Invernadero](Invernadero.jpg)
 
-Este proyecto consiste en un sistema de control de invernadero basado en ESP8266, diseñado para monitorear y regular las condiciones ambientales dentro de un invernadero de forma automatizada.
 
 ## Características
 
@@ -19,6 +19,13 @@ Este proyecto consiste en un sistema de control de invernadero basado en ESP8266
 2. Abre el proyecto en Arduino IDE.
 
 3. Conecta tu placa ESP8266 a tu computadora y carga el sketch.
+
+## Librerías utilizadas
+- **Wire.h:** Librería para la comunicación I2C.
+- **Adafruit_GFX.h:** Librería para gráficos básicos.
+- **Adafruit_SSD1306.h:** Librería para controlar la pantalla OLED SSD1306.
+- **DHT.h:** Librería para trabajar con sensores de humedad y temperatura DHT.
+- **ThreeWire.h y RtcDS1302.h:** Librerías para el manejo del módulo RTC DS1302.
 
 
 ## Conexiones

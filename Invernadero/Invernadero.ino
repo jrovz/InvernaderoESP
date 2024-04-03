@@ -150,7 +150,7 @@ void loop() {
   display.println();
   digitalWrite(Relay2, HIGH);
 
-  if (now.Hour() >= 6 && now.Hour() < 21) {
+  if ((now.Hour() >= 6 && now.Hour() < 8) || (now.Hour() >= 17 && now.Hour() < 23)) {
     digitalWrite(Relay1, LOW);
     display.print("Luces Encendidas");
     display.println("!");
@@ -159,6 +159,14 @@ void loop() {
     display.print("Luces Apagadas");
     display.println("!");
   }
+
+  if (now.Minute() < 15) {
+    digitalWrite(Relay2, LOW);
+
+  } else {
+    digitalWrite(Relay2, HIGH);
+  }
+
   display.display();  // Mostrar todo en la pantalla OLED
   // Esperar 2 segundos entre lecturas
   delay(1000);

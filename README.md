@@ -12,6 +12,11 @@ Este proyecto utiliza un ESP8266 para monitorear y controlar las condiciones amb
 
 - **Seguimiento Preciso del Tiempo:** Utiliza un módulo RTC DS1302 para mantener un seguimiento preciso del tiempo, incluso en ausencia de conexión a internet.
 
+- **Ventiladores:** Control automático de un ventilador según la temperatura y humedad ambientales.
+  
+- **Alertas:** Alertas visuales en la pantalla OLED cuando la temperatura supera los 35°C o la humedad cae por debajo del 25%.
+
+
 ## Instalación
 
 1. Clona el repositorio a tu dispositivo local:

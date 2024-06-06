@@ -1,21 +1,18 @@
+import os
 import dotenv
-
-dotenv.load_dotenv()
-
+from pathlib import Path
+from openai import OpenAI
 from langchain_openai import ChatOpenAI
-
-
 from langchain.memory import ChatMessageHistory
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
+dotenv.load_dotenv(override=True)
+apikey = os.getenv('OPENAI_API_KEY')
+os.environ['OPENAI_API_KEY'] = apikey
 
-from pathlib import Path
-from openai import OpenAI
- 
-from langchain.memory import ChatMessageHistory
+chat = ChatOpenAI(model="gpt-4-turbo")
 
-chat = ChatOpenAI(model="gpt-3.5-turbo-1106")
 prompt = ChatPromptTemplate.from_messages(
     [
         (
@@ -46,15 +43,15 @@ for i in range(10):
 
     HUMAN_INPUT = input("you:")
 
-    user_message =  f"""Responde al humano en español de manera sarcastica y extrovertida:
+    user_message =  f"""Responde al humano en español de manera sarcastica y extrovertida, escribe en mayuscula las palabras que quieras exaltar al pronunciarlas
         
             Human:   {HUMAN_INPUT}     
             
             Plant parameters:
-            - Ambient temperature: {ambient_temperature}°C
-            - Soil temperature: {soil_temperature}°C
-            - Soil humidity: {soil_humidity}%.
-            - Ambient humidity: {ambient_humidity}%.
+            - Ambient temperature: {ambient_temperature} degrees centigrade
+            - Soil temperature: {soil_temperature} degrees centigrade
+            - Soil humidity: {soil_humidity} percent.
+            - Ambient humidity: {ambient_humidity} percent.
             
             Capitalize when you want to show your strong temperament
                 
@@ -91,23 +88,4 @@ for i in range(10):
 
     response_plant.stream_to_file(speech_file_path_plant)
     response_input_mp3.stream_to_file(speech_file_path)
-
-# # *******
-# from gtts import gTTS
-# from playsound import playsound
-
-
-# texto = "¡Hola, humano! Pues aquí, derritiéndome a 50°C, pero ¿quién necesita frescura cuando se puede asarse lentamente, verdad? Y en cuanto a mi estado de ánimo, pues imagina estar en un sauna sin posibilidad de salir. ¿Y tú? ¿Cómo estás sobreviviendo al mundo exterior? Seguro que te envidio un poco, ¡pero no demasiado!"
-# tts = gTTS(texto,lang='es-us' )
-# tts.save("test.mp3")
-# playsound("test.mp3")
-
-# from pydub import AudioSegment
-# from pydub.playback import play
-
-# # Carga un archivo MP3
-# song = AudioSegment.from_mp3("LLM\speech.mp3")
-
-# Reproduce el audio
-# play(song)
 

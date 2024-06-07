@@ -1,215 +1,205 @@
-// Código desarrollado por Ing. Juan Felipe Rodriguez Valencia
-// para controlar un invernadero con un ESP8266, incluyendo funciones para leer sensores, controlar luces y el ventilador.
-// Fecha: 11/04/2024
-
-#include <Wire.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
+#include <WiFi.h>
 #include <DHT.h>
-#include <ThreeWire.h>
-#include <RtcDS1302.h>
+#include <ArduinoJson.h>
+#include <RTClib.h>
 
-#define SCREEN_WIDTH 128  // Ancho de la pantalla OLED en píxeles
-#define SCREEN_HEIGHT 64  // Alto de la pantalla OLED en píxeles
+// Definición de la red WiFi
+const char* ssid = "Alex";
+const char* password = "Palmeras";
 
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+// Definición de los pines de los sensores, relé y luces
+const int sensorHum1 = 34;  // Sensor de humedad de suelo
+const int DHTPin = 4;       // El pin al que está conectado el DHT11
+const int relayPin = 33;    // Relé conectado al pin digital
+const int lightPin = 32;    // Pin de las luces
 
-#define DHT_SENSOR_PIN D6
-#define DHT_SENSOR_TYPE DHT11
+// Umbrales de humedad
+const int umbralSeco = 30;    // Umbral bajo de humedad (30%)
+const int umbralHumedo = 70;  // Umbral alto de humedad (70%)
 
-#define Relay1 D7
-#define Relay2 D8
+// Rango válido para los valores de temperatura y humedad ambiental
+const float tempMin = 0.0;
+const float tempMax = 80.0;
+const float humAmbientalMin = 0.0;
+const float humAmbientalMax = 100.0;
 
-ThreeWire myWire(D4, D5, D3);
-RtcDS1302<ThreeWire> Rtc(myWire);
+// Horarios para control de luces
+const int horaEncendido = 6;  // Hora de encendido (6 am)
+const int horaApagado = 21;   // Hora de apagado (9 pm)
 
-DHT dht_sensor(DHT_SENSOR_PIN, DHT_SENSOR_TYPE);
+// Tipo de sensor DHT
+#define DHTTYPE DHT11
+DHT dht(DHTPin, DHTTYPE);
 
-// Macro para calcular el número de elementos en un array
-#define countof(a) (sizeof(a) / sizeof(a[0]))
+// Objeto para el servidor web
+WiFiServer server(80);
 
-// Función para leer los sensores de temperatura y humedad
-void readSensors(float& humedad, float& temperatura_C, float& temperatura_F) {
-  humedad = dht_sensor.readHumidity();
-  temperatura_C = dht_sensor.readTemperature();
-  temperatura_F = dht_sensor.readTemperature(true);
-}
-
-// Función para imprimir la fecha y hora en el monitor serial
-void printDateTime(const RtcDateTime& dt, size_t bufferSize) {
-  char datestring[bufferSize];
-
-  snprintf_P(datestring,
-             bufferSize,
-             PSTR("%02u/%02u/%04u %02u:%02u:%02u"),
-             dt.Month(),
-             dt.Day(),
-             dt.Year(),
-             dt.Hour(),
-             dt.Minute(),
-             dt.Second());
-  Serial.print(datestring);
-}
-
-// Función para mostrar los datos en la pantalla OLED
-void displayDataOnOLED(float humedad, float temperatura_C, const RtcDateTime& now) {
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(WHITE);
-  display.setCursor(0, 0);
-
-  // Mostrar título
-  display.println("INVERNADERO ESP8266");
-  display.drawLine(0, 10, 127, 10, WHITE);
-  display.println();
-
-  // Mostrar hora
-  display.print("Hora: ");
-  display.print(now.Hour());
-  display.print(":");
-  display.print(now.Minute());
-  display.println();
-
-  // Mostrar humedad
-  display.print("Humedad: ");
-  display.print(humedad);
-  display.println("%");
-
-  // Mostrar temperatura en Celsius
-  display.print("Temperatura: ");
-  display.print(temperatura_C);
-  display.println("°C");
-
-  display.display(); // Mostrar en la pantalla OLED
-}
-
-// Función para controlar las luces del invernadero según el tiempo
-void controlLights(const RtcDateTime& now) {
-  bool lightsOn = false;
-
-  // Opción 1: Encender de 6am a 10am y de 5pm a 11pm
-  if ((now.Hour() >= 6 && now.Hour() < 10) || (now.Hour() >= 17 && now.Hour() < 23)) {
-    lightsOn = true;
-  }
-
-  // Opción 2: Encender de 6am a 11pm
-  /*
-  if (now.Hour() >= 6 && now.Hour() < 23) {
-    lightsOn = true;
-  }
-  */
-
-  // Control de luces según la opción seleccionada
-  digitalWrite(Relay1, lightsOn ? LOW : HIGH); 
-}
-
-// Función para controlar el ventilador del invernadero según el tiempo
-void controlFan(const RtcDateTime& now) {
-  // Controlar el ventilador: Encenderlo durante los primeros 15 minutos de cada hora
-  digitalWrite(Relay2, now.Minute() < 15 ? LOW : HIGH);
-}
-
-// Función para mostrar advertencias en la pantalla OLED
-void warnings(float humedad, float temperatura_C) {
-  // Verificar si la temperatura supera los 35 grados Celsius
-  if (temperatura_C > 35) {
-    display.clearDisplay();
-    display.setTextSize(1.5);
-    display.setTextColor(WHITE);
-    display.setCursor(10, 20);
-    display.println("¡ALERTA!");
-    display.setCursor(10, 40);
-    display.println("Temperatura alta");
-    display.display();
-    delay(2000);
-    display.clearDisplay();
-  }
-
-  // Verificar si la humedad cae por debajo del 25%
-  if (humedad < 25) {
-    display.clearDisplay();
-    display.setTextSize(1.5);
-    display.setTextColor(WHITE);
-    display.setCursor(10, 20);
-    display.println("¡ALERTA!");
-    display.setCursor(10, 40);
-    display.println("Humedad baja");
-    display.display();
-    delay(2000);
-    display.clearDisplay();
-  }
-}
+// Definición del RTC
+RTC_DS1307 rtc;
+char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
 void setup() {
+  // Configuración de los pines
+  pinMode(sensorHum1, INPUT);
+  pinMode(relayPin, OUTPUT);
+  pinMode(lightPin, OUTPUT);  // Configuración del pin de las luces como salida
+
+  // Inicialización del sensor DHT
+  dht.begin();
+
+  // Inicialización del puerto serie
   Serial.begin(115200);
-  pinMode(Relay1, OUTPUT);
-  pinMode(Relay2, OUTPUT);
-  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
-    Serial.println(F("Error al asignar SSD1306"));
-    for (;;);
-  }
-  delay(2000);
-  display.clearDisplay();
+  delay(10);
 
-  display.setTextSize(1);
-  display.setTextColor(WHITE);
-  display.setCursor(0, 10);
-  display.display();
+  // Inicialización del RTC
+  initRTC();
 
-  dht_sensor.begin();
-  Serial.print("compiled: ");
-  Serial.print(__DATE__);
-  Serial.println(__TIME__);
+  // Conexión a la red WiFi
+  connectToWiFi();
 
-  Rtc.Begin();
+  // Imprimir la dirección IP
+  Serial.println("");
+  Serial.println("WiFi conectado.");
+  Serial.println("Dirección IP: ");
+  Serial.println(WiFi.localIP());
 
-  RtcDateTime compiled = RtcDateTime(__DATE__, __TIME__);
-  printDateTime(compiled, sizeof(compiled));
-  Serial.println();
-
-  if (!Rtc.IsDateTimeValid()) {
-    Serial.println("RTC lost confidence in the DateTime!");
-    Rtc.SetDateTime(compiled);
-  }
-
-  if (Rtc.GetIsWriteProtected()) {
-    Serial.println("RTC was write protected, enabling writing now");
-    Rtc.SetIsWriteProtected(false);
-  }
-
-  if (!Rtc.GetIsRunning()) {
-    Serial.println("RTC was not actively running, starting now");
-    Rtc.SetIsRunning(true);
-  }
-
-  RtcDateTime now = Rtc.GetDateTime();
-  if (now < compiled) {
-    Serial.println("RTC is older than compile time!  (Updating DateTime)");
-    Rtc.SetDateTime(compiled);
-  } else if (now > compiled) {
-    Serial.println("RTC is newer than compile time. (this is expected)");
-  } else if (now == compiled) {
-    Serial.println("RTC is the same as compile time! (not expected but all is fine)");
-  }
+  // Iniciar el servidor web
+  server.begin();
 }
 
 void loop() {
-  float humedad, temperatura_C, temperatura_F;
-  RtcDateTime now = Rtc.GetDateTime();
+  WiFiClient client = server.available();
 
-  printDateTime(now, sizeof(now));
-
-  readSensors(humedad, temperatura_C, temperatura_F);
-
-  if (!isnan(temperatura_C) && !isnan(temperatura_F) && !isnan(humedad)) {
-    warnings(humedad, temperatura_C); // Verificar advertencias
-    displayDataOnOLED(humedad, temperatura_C, now);
-  } else {
-    Serial.println("Error al leer el sensor DHT!");
+  if (client) {
+    handleClient(client);
   }
 
-  controlLights(now);
-  controlFan(now); // Controlar el ventilador
-
-  delay(1000);
+  controlLights();  // Controlar las luces basado en la hora actual
 }
+
+void connectToWiFi() {
+  int attempts = 0;
+  Serial.println("Conectando a WiFi");
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED && attempts < 10) {
+    delay(500);
+    Serial.print(".");
+    attempts++;
+  }
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("");
+    Serial.println("Error al conectar a WiFi. Reiniciando...");
+    ESP.restart();
+  }
+}
+
+void handleClient(WiFiClient client) {
+  Serial.println("Nuevo Cliente.");
+  String currentLine = "";
+  while (client.connected()) {
+    if (client.available()) {
+      char c = client.read();
+      Serial.write(c);
+      if (c == '\n') {
+        if (currentLine.length() == 0) {
+          sendSensorData(client);
+          break;
+        } else {
+          currentLine = "";
+        }
+      } else if (c != '\r') {
+        currentLine += c;
+      }
+    }
+  }
+  client.stop();
+  Serial.println("Cliente desconectado.");
+}
+
+void sendSensorData(WiFiClient client) {
+  // Leer la humedad del suelo
+  int humedad1 = analogRead(sensorHum1);
+  int porcentajeHum1 = map(humedad1, 4095, 2237, 0, 100);
+  porcentajeHum1 = constrain(porcentajeHum1, 0, 100);  // Asegura que el valor está entre 0% y 100%
+
+  // Leer la temperatura y la humedad ambiental
+  float temp1 = dht.readTemperature();
+  float humAmbiental1 = dht.readHumidity();
+
+  // Inicializar variable de error
+  String error = "";
+
+  // Verificar si la temperatura y la humedad están dentro de los rangos válidos
+  if (temp1 < tempMin || temp1 > tempMax || humAmbiental1 < humAmbientalMin || humAmbiental1 > humAmbientalMax) {
+    error = "Error: Datos fuera de rango";
+  }
+
+  // Control del relé basado en la humedad de suelo
+  if (porcentajeHum1 < umbralSeco) {
+    digitalWrite(relayPin, HIGH);  // Activa el relé
+  } else if (porcentajeHum1 > umbralHumedo) {
+    digitalWrite(relayPin, LOW);  // Desactiva el relé
+  }
+
+  // Obtener fecha y hora actual
+  String currentDateTime = getCurrentDateTime();
+
+  // Crear el objeto JSON con los datos del sensor
+  DynamicJsonDocument doc(1024);
+  doc["humedadSuelo"] = porcentajeHum1;
+  doc["Temperatura"] = static_cast<int>(temp1 * 10) / 10.0;   // Redondeo a 1 decimal
+  doc["HumedadAmbiental"] = static_cast<int>(humAmbiental1);  // Redondeo a entero
+  doc["FechaHora"] = currentDateTime;
+  if (error != "") {
+    doc["error"] = error;  // Añadir mensaje de error si existe
+  }
+
+  // Enviar la respuesta JSON al cliente
+  sendJsonResponse(client, doc);
+}
+
+void sendJsonResponse(WiFiClient client, DynamicJsonDocument doc) {
+  client.println("HTTP/1.1 200 OK");
+  client.println("Content-type:application/json");
+  client.println();
+
+  serializeJson(doc, client);
+  client.println();
+
+  serializeJson(doc, Serial);
+  Serial.println();
+}
+
+void initRTC() {
+  if (!rtc.begin()) {
+    Serial.println("Couldn't find RTC");
+    Serial.flush();
+    while (1);
+  }
+  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));  // Ajusta la fecha y hora del RTC a la fecha y hora de compilación
+}
+
+String getCurrentDateTime() {
+  DateTime now = rtc.now();
+  String dateTime = "";
+  dateTime += String(now.year()) + "/";
+  dateTime += String(now.month()) + "/";
+  dateTime += String(now.day()) + " (";
+  dateTime += String(daysOfTheWeek[now.dayOfTheWeek()]) + ") ";
+  dateTime += String(now.hour()) + ":";
+  dateTime += String(now.minute()) + ":";
+  dateTime += String(now.second());
+  return dateTime;
+}
+
+void controlLights() {
+  DateTime now = rtc.now();
+  int currentHour = now.hour();
+
+  if (currentHour >= horaEncendido && currentHour < horaApagado) {
+    digitalWrite(lightPin, HIGH);  // Encender las luces
+  } else {
+    digitalWrite(lightPin, LOW);   // Apagar las luces
+  }
+}
+

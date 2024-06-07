@@ -56,7 +56,6 @@ Este proyecto tiene como objetivo crear un sistema de monitoreo de plantas utili
 1. **Conectar y Configurar el ESP32**: Asegúrate de que el ESP32 esté conectado correctamente a los sensores y al relé, y que esté conectado a la red WiFi.
 2. **Ejecutar el Script Python**: Corre el script para empezar a recibir datos y generar respuestas.
 
-## Ejemplo de Interacción
 
 
 ## Instalación
@@ -103,18 +102,12 @@ Este proyecto tiene como objetivo crear un sistema de monitoreo de plantas utili
 
 Ahora tu sistema de monitoreo de plantas está listo para funcionar. Puedes interactuar con él a través de la red WiFi y recibir respuestas inteligentes y sarcásticas simulando ser la planta monitoreada.
 
-
-## Librerías utilizadas
-- **Wire.h:** Librería para la comunicación I2C.
-- **Adafruit_GFX.h:** Librería para gráficos básicos.
-- **Adafruit_SSD1306.h:** Librería para controlar la pantalla OLED SSD1306.
-- **DHT.h:** Librería para trabajar con sensores de humedad y temperatura DHT.
-- **ThreeWire.h y RtcDS1302.h:** Librerías para el manejo del módulo RTC DS1302.
-
-
 ## Contribuciones
 
 ¡Las contribuciones son bienvenidas! Si te interesa contribuir al desarrollo de este proyecto, no dudes en enviar pull requests con mejoras, correcciones de errores o nuevas características. Tu ayuda es fundamental para hacer de este proyecto una herramienta aún más poderosa y útil para la comunidad.
+
+
+## Ejemplo de Interacción
 
 ```plaintext
 Human: ¿Qué tal está el clima hoy?

@@ -1,29 +1,115 @@
-# Control de Invernadero con ESP8266
-Este proyecto utiliza un ESP8266 para monitorear y controlar las condiciones ambientales de un invernadero, incluyendo la temperatura, la humedad y la iluminación. Se utiliza una pantalla OLED para mostrar los datos y se utilizan sensores DHT11 para medir la temperatura y la humedad.
+# Control de Invernadero con ESP32
+## Descripción
+
+Este proyecto tiene como objetivo crear un sistema de monitoreo de plantas utilizando un microcontrolador ESP32. El sistema recolecta datos de varios sensores ambientales y de suelo, los procesa, y los transmite a través de una conexión WiFi. Los datos se almacenan en un archivo JSON y se utilizan para interactuar con un modelo de lenguaje natural que responde de manera sarcástica y extrovertida, simulando ser una planta de marihuana.
 
 ![Invernadero](Invernadero.jpg)
 
+# Proyecto de Monitoreo de Plantas con ESP32
 
-## Características
 
-- **Monitoreo de Temperatura y Humedad:** Utiliza un sensor DHT11 para medir la temperatura y la humedad del invernadero.
+## Componentes del Proyecto
 
-- **Interfaz de Usuario Clara:** Muestra los datos de temperatura, humedad y estado de las luces en una pantalla OLED para facilitar la visualización.
+### Hardware
+- **ESP32**: Microcontrolador con conectividad WiFi y Bluetooth.
+- **Sensor de Humedad de Suelo**: Mide la humedad del suelo.
+- **Sensor DHT11**: Mide la temperatura y la humedad ambiental.
+- **RTC DS1307**: Proporciona la fecha y la hora actual.
+- **Relé**: Controla dispositivos externos como luces.
 
-- **Seguimiento Preciso del Tiempo:** Utiliza un módulo RTC DS1302 para mantener un seguimiento preciso del tiempo, incluso en ausencia de conexión a internet.
+### Software
+- **Arduino IDE**: Plataforma de desarrollo utilizada para programar el ESP32.
+- **Python**: Lenguaje de programación utilizado para recibir y procesar los datos del sensor, y para interactuar con la API de OpenAI.
+- **OpenAI API**: Utilizada para generar respuestas inteligentes y sarcásticas basadas en los datos de los sensores.
 
-- **Ventiladores:** Control automático de un ventilador según la temperatura y humedad ambientales.
-  
-- **Alertas:** Alertas visuales en la pantalla OLED cuando la temperatura supera los 35°C o la humedad cae por debajo del 25%.
+## Funcionalidades
+
+1. **Monitoreo de Sensores**:
+    - Recopila datos de humedad del suelo, temperatura y humedad ambiental.
+    - Controla un relé basado en los niveles de humedad del suelo.
+
+2. **Conexión WiFi**:
+    - Conecta el ESP32 a una red WiFi para transmitir datos.
+
+3. **Almacenamiento de Datos**:
+    - Guarda los datos de los sensores en un archivo JSON para su posterior análisis.
+
+4. **Interacción Inteligente**:
+    - Utiliza un modelo de lenguaje natural (GPT-4) para responder a preguntas de manera sarcástica y extrovertida, simulando ser una planta.
+
+## Ejecución del Proyecto
+
+### Parte Arduino
+
+1. **Configuración del Hardware**: Conectar los sensores y el relé al ESP32.
+2. **Programación del ESP32**: Subir el código al ESP32 utilizando el Arduino IDE.
+
+### Parte Python
+
+1. **Configuración del Entorno**:
+    - Instalar las dependencias necesarias (`requests`, `dotenv`, `openai`).
+    - Configurar las variables de entorno para la API de OpenAI.
+
+2. **Ejecución del Script**:
+    - Ejecutar el script Python para recibir y procesar los datos de los sensores, y generar respuestas utilizando la API de OpenAI.
+
+## Uso del Proyecto
+
+1. **Conectar y Configurar el ESP32**: Asegúrate de que el ESP32 esté conectado correctamente a los sensores y al relé, y que esté conectado a la red WiFi.
+2. **Ejecutar el Script Python**: Corre el script para empezar a recibir datos y generar respuestas.
+
+## Ejemplo de Interacción
+
+```plaintext
+Human: ¿Qué tal está el clima hoy?
+Plant: ¡Hey! Aquí sudando a 35 grados centígrados y con 80 por ciento de humedad. ¡UN DÍA PERFECTO para una sauna, pero NO para una planta como yo!
+
 
 
 ## Instalación
 
 1. Clona el repositorio a tu dispositivo local:
 
+    ```sh
+    git clone https://github.com/tu-usuario/proyecto-monitoreo-plantas.git
+    cd proyecto-monitoreo-plantas
+    ```
+
 2. Abre el proyecto en Arduino IDE.
 
-3. Conecta tu placa ESP8266 a tu computadora y carga el sketch.
+    - Abre el Arduino IDE.
+    - Navega a `Archivo -> Abrir` y selecciona el archivo `.ino` del proyecto clonado.
+
+3. Conecta tu placa ESP32 a tu computadora y carga el sketch.
+
+    - Asegúrate de seleccionar la placa ESP32 y el puerto correcto en `Herramientas -> Placa` y `Herramientas -> Puerto`.
+    - Haz clic en el botón de cargar (flecha hacia la derecha) para subir el sketch a la placa ESP32.
+
+4. Instala las dependencias de Python:
+
+    ```sh
+    pip install requests python-dotenv openai
+    ```
+
+5. Configura las variables de entorno para la API de OpenAI:
+
+    - Crea un archivo `.env` en el directorio raíz del proyecto.
+    - Añade tu clave de API de OpenAI al archivo `.env`:
+
+    ```env
+    OPENAI_API_KEY=tu_clave_de_api
+    ```
+
+6. Ejecuta el script Python para comenzar a recibir y procesar los datos de los sensores:
+
+    ```sh
+    python script.py
+    ```
+
+    Nota: Asegúrate de que la dirección IP del ESP32 en el script Python (`data_request`) sea la correcta.
+
+Ahora tu sistema de monitoreo de plantas está listo para funcionar. Puedes interactuar con él a través de la red WiFi y recibir respuestas inteligentes y sarcásticas simulando ser la planta monitoreada.
+
 
 ## Librerías utilizadas
 - **Wire.h:** Librería para la comunicación I2C.
@@ -33,24 +119,6 @@ Este proyecto utiliza un ESP8266 para monitorear y controlar las condiciones amb
 - **ThreeWire.h y RtcDS1302.h:** Librerías para el manejo del módulo RTC DS1302.
 
 
-## Conexiones
-
-A continuación se detallan las conexiones necesarias para el proyecto, según lo definido en el código:
-
-- **Sensor DHT11:** Conectar el pin de datos del sensor al pin D6 del ESP8266.
-
-- **Relé 1:** Conectar el relé 1 al pin D7 del ESP8266.
-
-- **Relé 2:** Conectar el relé 2 al pin D8 del ESP8266.
-
-- **Pantalla OLED:** Conectar la pantalla OLED a los pines SDA y SCL del ESP8266 (usualmente D1 y D2, respectivamente).
-
-- **Módulo RTC DS1302:** Conectar el módulo RTC a los pines IO, SCLK y CE del ESP8266 (usualmente D3, D5 y D4, respectivamente).
-
 ## Contribuciones
 
 ¡Las contribuciones son bienvenidas! Si te interesa contribuir al desarrollo de este proyecto, no dudes en enviar pull requests con mejoras, correcciones de errores o nuevas características. Tu ayuda es fundamental para hacer de este proyecto una herramienta aún más poderosa y útil para la comunidad.
-
-## Licencia
-
-Este proyecto está licenciado bajo la [Licencia MIT](LICENSE).

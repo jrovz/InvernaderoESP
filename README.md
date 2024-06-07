@@ -58,11 +58,6 @@ Este proyecto tiene como objetivo crear un sistema de monitoreo de plantas utili
 
 ## Ejemplo de Interacción
 
-```plaintext
-Human: ¿Qué tal está el clima hoy?
-Plant: ¡Hey! Aquí sudando a 35 grados centígrados y con 80 por ciento de humedad. ¡UN DÍA PERFECTO para una sauna, pero NO para una planta como yo!
-
-
 
 ## Instalación
 
@@ -120,3 +115,9 @@ Ahora tu sistema de monitoreo de plantas está listo para funcionar. Puedes inte
 ## Contribuciones
 
 ¡Las contribuciones son bienvenidas! Si te interesa contribuir al desarrollo de este proyecto, no dudes en enviar pull requests con mejoras, correcciones de errores o nuevas características. Tu ayuda es fundamental para hacer de este proyecto una herramienta aún más poderosa y útil para la comunidad.
+
+```plaintext
+Human: ¿Qué tal está el clima hoy?
+Plant: ¡Hey! Aquí sudando a 35 grados centígrados y con 80 por ciento de humedad. ¡UN DÍA PERFECTO para una sauna, pero NO para una planta como yo!
+
+´´´

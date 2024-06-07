@@ -1,11 +1,9 @@
-# Control de Invernadero con ESP32
+# Proyecto de Monitoreo de Plantas con ESP32
 ## Descripción
 
 Este proyecto tiene como objetivo crear un sistema de monitoreo de plantas utilizando un microcontrolador ESP32. El sistema recolecta datos de varios sensores ambientales y de suelo, los procesa, y los transmite a través de una conexión WiFi. Los datos se almacenan en un archivo JSON y se utilizan para interactuar con un modelo de lenguaje natural que responde de manera sarcástica y extrovertida, simulando ser una planta de marihuana.
 
 ![Invernadero](Invernadero.jpg)
-
-# Proyecto de Monitoreo de Plantas con ESP32
 
 
 ## Componentes del Proyecto

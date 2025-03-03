@@ -1,7 +1,7 @@
-# Proyecto de Monitoreo de Plantas con ESP32
+# Tarjeta Educativa: Explorando el ESP32
 ## Descripción
 
-Este proyecto tiene como objetivo crear un sistema de monitoreo de plantas utilizando un microcontrolador ESP32. El sistema recolecta datos de varios sensores ambientales y de suelo, los procesa, y los transmite a través de una conexión WiFi. Los datos se almacenan en un archivo JSON y se utilizan para interactuar con un modelo de lenguaje natural que responde de manera sarcástica y extrovertida.
+Esta tarjeta educativa está diseñada para explorar las capacidades del ESP32 a través de un sistema de adquisición y transmisión de datos. Utilizando sensores y módulos adicionales, el ESP32 recopila información del entorno y la envía mediante conexión WiFi para su almacenamiento y análisis. Este proyecto permite a los estudiantes y entusiastas aprender sobre la programación del ESP32, la integración de sensores y la comunicación inalámbrica.
 
 ![Invernadero](Invernadero.jpg)
 

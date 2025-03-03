@@ -3,8 +3,8 @@
 
 Esta tarjeta educativa está diseñada para explorar las capacidades del ESP32 a través de un sistema de adquisición y transmisión de datos. Utilizando sensores y módulos adicionales, el ESP32 recopila información del entorno y la envía mediante conexión WiFi para su almacenamiento y análisis. Este proyecto permite a los estudiantes y entusiastas aprender sobre la programación del ESP32, la integración de sensores y la comunicación inalámbrica.
 
-![Invernadero](Esquematico.jpg)
-![Gerber](Placa.jpg)
+![Invernadero](Esquematico.png)
+![Gerber](Placa.png)
 
 
 ## Componentes del Proyecto
